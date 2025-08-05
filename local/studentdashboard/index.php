@@ -25,22 +25,23 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/filelib.php');
 
-use local_studentdashboard\output\dashboard_page;
-use local_studentdashboard\output\renderer;
-
+// Require login first
 require_login();
 
-// Check capability
-$context = context_system::instance();
-require_capability('local/studentdashboard:view', $context);
+// Only proceed if user is logged in and not guest
+if (!isloggedin() || isguestuser()) {
+    redirect(new moodle_url('/login/index.php'));
+}
 
-// Check if user is a student
-if (!has_capability('moodle/course:view', $context) || 
-    has_capability('moodle/site:config', $context) || 
-    is_siteadmin()) {
-    // Redirect non-students to regular dashboard
+$context = context_system::instance();
+
+// Simple access check - redirect admins to standard dashboard
+if (is_siteadmin() || has_capability('moodle/site:config', $context)) {
     redirect(new moodle_url('/my/'));
 }
+
+// For now, allow all logged-in non-admin users
+// You can add more specific capability checks after the plugin is installed
 
 // Set up page
 $PAGE->set_url('/local/studentdashboard/index.php');
@@ -49,19 +50,37 @@ $PAGE->set_title(get_string('dashboard_title', 'local_studentdashboard'));
 $PAGE->set_heading(get_string('dashboard_title', 'local_studentdashboard'));
 $PAGE->set_pagelayout('mydashboard');
 
-// Add CSS
-$PAGE->requires->css('/local/studentdashboard/styles.css');
+// Add CSS with proper Moodle URL
+$PAGE->requires->css(new moodle_url('/local/studentdashboard/styles.css'));
 
 // Add JavaScript for progress animation
 $PAGE->requires->js_call_amd('local_studentdashboard/dashboard', 'init');
 
-// Create renderer
-$output = $PAGE->get_renderer('local_studentdashboard');
+// Use autoloading for classes
+use local_studentdashboard\output\dashboard_page;
 
-// Create dashboard page
-$dashboardpage = new dashboard_page($USER);
-
-// Output
-echo $OUTPUT->header();
-echo $output->render_dashboard_page($dashboardpage);
-echo $OUTPUT->footer();
+try {
+    // Create renderer
+    $output = $PAGE->get_renderer('local_studentdashboard');
+    
+    // Create dashboard page
+    $dashboardpage = new dashboard_page($USER);
+    
+    // Output
+    echo $OUTPUT->header();
+    echo $output->render_dashboard_page($dashboardpage);
+    echo $OUTPUT->footer();
+    
+} catch (Exception $e) {
+    // Fallback if there are any errors
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('dashboard_title', 'local_studentdashboard'));
+    echo html_writer::div('Dashboard is being set up. Please check back later.', 'alert alert-info');
+    
+    // For debugging, show error to admins
+    if (is_siteadmin()) {
+        echo html_writer::div('Debug info: ' . $e->getMessage(), 'alert alert-warning');
+    }
+    
+    echo $OUTPUT->footer();
+}

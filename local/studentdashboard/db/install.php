@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Access definitions for Student Dashboard local plugin
+ * Install script for Student Dashboard local plugin
  *
  * @package    local_studentdashboard
  * @copyright  2024 Learning Dashboard
@@ -24,15 +24,29 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'local/studentdashboard:view' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'student' => CAP_ALLOW,
-            'user' => CAP_ALLOW,
-            'authenticated' => CAP_ALLOW
-        ),
-        'clonepermissionsfrom' => 'moodle/site:accessallgroups'
-    ),
-);
+/**
+ * Custom post installation hook
+ */
+function xmldb_local_studentdashboard_install() {
+    global $DB;
+    
+    // Ensure the capability is assigned to authenticated users by default
+    $context = context_system::instance();
+    
+    // Get the authenticated user archetype role
+    $roles = get_archetype_roles('user');
+    
+    foreach ($roles as $role) {
+        // Assign the view capability to user roles
+        role_change_permission($role->id, $context, 'local/studentdashboard:view', CAP_ALLOW);
+    }
+    
+    // Also assign to student roles specifically
+    $studentroles = get_archetype_roles('student');
+    
+    foreach ($studentroles as $role) {
+        role_change_permission($role->id, $context, 'local/studentdashboard:view', CAP_ALLOW);
+    }
+    
+    return true;
+}

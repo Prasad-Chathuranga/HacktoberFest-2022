@@ -28,82 +28,32 @@ defined('MOODLE_INTERNAL') || die();
  * Hook to insert link to student dashboard in navigation
  */
 function local_studentdashboard_extend_navigation(global_navigation $navigation) {
-    global $USER, $PAGE;
-    
-    // Only show for logged in users who are students
-    if (!isloggedin() || isguestuser()) {
-        return;
-    }
-    
-    $context = context_system::instance();
-    
-    // Check if user has capability and is not an admin
-    if (has_capability('local/studentdashboard:view', $context) && 
-        !has_capability('moodle/site:config', $context) && 
-        !is_siteadmin()) {
-        
-        // Find the home node
-        $homenode = $navigation->find('home', global_navigation::TYPE_SETTING);
-        if ($homenode) {
-            $url = new moodle_url('/local/studentdashboard/index.php');
-            $dashboardnode = navigation_node::create(
-                get_string('studentdashboard', 'local_studentdashboard'),
-                $url,
-                global_navigation::TYPE_CUSTOM,
-                null,
-                'studentdashboard',
-                new pix_icon('i/dashboard', '')
-            );
-            $homenode->add_node($dashboardnode);
-        }
-    }
-}
-
-/**
- * Hook to extend navigation settings
- */
-function local_studentdashboard_extend_settings_navigation(settings_navigation $navigation, context $context) {
     global $USER;
     
-    // Only for students
-    if (!has_capability('local/studentdashboard:view', context_system::instance()) ||
-        has_capability('moodle/site:config', context_system::instance()) ||
-        is_siteadmin()) {
+    // Only show for logged in non-admin users
+    if (!isloggedin() || isguestuser() || is_siteadmin()) {
         return;
     }
     
-    // Add to user preferences if on user profile page
-    if ($context instanceof context_user && $context->instanceid == $USER->id) {
-        $url = new moodle_url('/local/studentdashboard/index.php');
-        $node = navigation_node::create(
-            get_string('studentdashboard', 'local_studentdashboard'),
-            $url,
-            navigation_node::TYPE_SETTING,
-            null,
-            'studentdashboard'
-        );
-        
-        $usernode = $navigation->find('userviewingsettings', null);
-        if ($usernode) {
-            $usernode->add_node($node);
-        }
+    // Simple check - don't show for site admins
+    $context = context_system::instance();
+    if (has_capability('moodle/site:config', $context)) {
+        return;
     }
-}
-
-/**
- * Get course overview files for a course
- * @param stdClass $course Course object
- * @return array Array of file objects
- */
-function local_studentdashboard_get_course_overview_files($course) {
-    global $CFG;
-    require_once($CFG->libdir . '/filestorage/file_storage.php');
     
-    $fs = get_file_storage();
-    $context = context_course::instance($course->id);
-    $files = $fs->get_area_files($context->id, 'course', 'overviewfiles', 0, 'filename', false);
+    // Add the dashboard link to main navigation
+    $url = new moodle_url('/local/studentdashboard/index.php');
+    $dashboardnode = navigation_node::create(
+        get_string('studentdashboard', 'local_studentdashboard'),
+        $url,
+        global_navigation::TYPE_CUSTOM,
+        null,
+        'studentdashboard',
+        new pix_icon('i/dashboard', '')
+    );
     
-    return $files;
+    // Try to add it to the main navigation
+    $navigation->add_node($dashboardnode);
 }
 
 /**
@@ -147,9 +97,10 @@ function local_studentdashboard_is_student($user = null) {
         $user = $USER;
     }
     
-    $context = context_system::instance();
+    if (is_siteadmin($user)) {
+        return false;
+    }
     
-    return has_capability('local/studentdashboard:view', $context, $user) &&
-           !has_capability('moodle/site:config', $context, $user) &&
-           !is_siteadmin($user);
+    $context = context_system::instance();
+    return !has_capability('moodle/site:config', $context, $user);
 }
