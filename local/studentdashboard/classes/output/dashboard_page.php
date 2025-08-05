@@ -61,6 +61,9 @@ class dashboard_page implements renderable, templatable {
         $badges = $this->dashboard->get_user_badges();
         $recent_items = $this->dashboard->get_recent_items();
         $last_course = $this->dashboard->get_last_accessed_course();
+        $upcoming_assignments = $this->dashboard->get_upcoming_assignments();
+        $recent_grades = $this->dashboard->get_recent_grades();
+        $quick_navigation = $this->dashboard->get_quick_navigation();
 
         // Prepare courses data
         $coursesdata = [];
@@ -102,6 +105,47 @@ class dashboard_page implements renderable, templatable {
             ];
         }
 
+        // Prepare assignments data
+        $assignmentsdata = [];
+        foreach ($upcoming_assignments as $assignment) {
+            $assignmentsdata[] = [
+                'id' => $assignment->id,
+                'name' => format_string($assignment->name),
+                'coursename' => format_string($assignment->coursename),
+                'duedate' => userdate($assignment->duedate, get_string('strftimedaydatetime')),
+                'days_until' => $assignment->days_until,
+                'urgency' => $assignment->urgency,
+                'url' => $assignment->url->out(),
+                'modname' => $assignment->modname
+            ];
+        }
+
+        // Prepare grades data
+        $gradesdata = [];
+        foreach ($recent_grades as $grade) {
+            $gradesdata[] = [
+                'id' => $grade->id,
+                'itemname' => format_string($grade->itemname),
+                'coursename' => format_string($grade->coursename),
+                'finalgrade' => number_format($grade->finalgrade, 1),
+                'grademax' => number_format($grade->grademax, 1),
+                'percentage' => $grade->percentage,
+                'grade_class' => $grade->grade_class,
+                'timemodified' => userdate($grade->timemodified, get_string('strftimerecent'))
+            ];
+        }
+
+        // Prepare navigation data
+        $navigationdata = [];
+        foreach ($quick_navigation as $nav) {
+            $navigationdata[] = [
+                'name' => $nav['name'],
+                'url' => $nav['url']->out(),
+                'icon' => $nav['icon'],
+                'description' => $nav['description']
+            ];
+        }
+
         return [
             'user' => [
                 'id' => $this->user->id,
@@ -123,7 +167,12 @@ class dashboard_page implements renderable, templatable {
             'dashboard_url' => (new \moodle_url('/local/studentdashboard/index.php'))->out(),
             'has_courses' => !empty($courses),
             'has_badges' => !empty($badges),
-            'has_recent_items' => !empty($recent_items)
+            'has_recent_items' => !empty($recent_items),
+            'upcoming_assignments' => $assignmentsdata,
+            'has_assignments' => !empty($upcoming_assignments),
+            'recent_grades' => $gradesdata,
+            'has_grades' => !empty($recent_grades),
+            'quick_navigation' => $navigationdata
         ];
     }
 

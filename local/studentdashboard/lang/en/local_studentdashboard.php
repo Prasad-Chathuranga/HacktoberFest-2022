@@ -49,3 +49,22 @@ $string['medical_foundations'] = 'Medical Introduction and Foundations';
 $string['critical_care'] = 'Critical Care Level 2';
 $string['advance_learning'] = 'Advance your learning with the level 2 module for Critical Care...';
 $string['essential_learning'] = 'This course forms an introduction to the medical foundations that are essential learning criteria...';
+
+// Enhanced dashboard strings
+$string['upcoming_assignments'] = 'Upcoming Assignments';
+$string['recent_grades'] = 'Recent Grades';
+$string['quick_navigation'] = 'Quick Navigation';
+$string['due_in'] = 'Due in {$a} days';
+$string['due_today'] = 'Due today';
+$string['overdue'] = 'Overdue';
+$string['no_assignments'] = 'No upcoming assignments';
+$string['no_grades'] = 'No recent grades';
+$string['assignment'] = 'Assignment';
+$string['quiz'] = 'Quiz';
+$string['grade_excellent'] = 'Excellent';
+$string['grade_good'] = 'Good';
+$string['grade_average'] = 'Average';
+$string['grade_needs_improvement'] = 'Needs Improvement';
+$string['view_all_assignments'] = 'View All Assignments';
+$string['view_all_grades'] = 'View All Grades';
+$string['navigation_shortcuts'] = 'Navigation Shortcuts';
