@@ -1,0 +1,203 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Dashboard template for Student Dashboard local plugin
+
+    @package    local_studentdashboard
+    @copyright  2024 Learning Dashboard
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+
+<div class="student-dashboard">
+    <!-- Information Banner -->
+    <div class="alert alert-info dashboard-info">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <i class="fas fa-info-circle"></i>
+        {{#str}}dashboard_subtitle, local_studentdashboard{{/str}}
+    </div>
+
+    <!-- User Profile Card -->
+    <div class="user-profile-card mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info ml-3">
+                        <h5 class="mb-1">{{user.fullname}}</h5>
+                        <p class="mb-2 text-muted">{{user.email}}</p>
+                        <a href="{{user.profileurl}}" class="edit-profile">
+                            {{#str}}view_edit_profile, local_studentdashboard{{/str}} 
+                            <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="text-center">
+                    <h6 class="mb-3">{{#str}}badges, local_studentdashboard{{/str}}</h6>
+                    <div class="d-flex justify-content-center">
+                        {{#badges}}
+                        <div class="badge-item mr-2" title="{{name}}">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        {{/badges}}
+                        {{^badges}}
+                        <div class="badge-item mr-2">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="badge-item mr-2">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="badge-item mr-2">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="badge-item">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        {{/badges}}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="row text-center">
+                    <div class="col-4 stats-card">
+                        <div class="stats-number">{{stats.enrolled}}</div>
+                        <div class="stats-label">{{#str}}enrolled, local_studentdashboard{{/str}}</div>
+                    </div>
+                    <div class="col-4 stats-card">
+                        <div class="stats-number">{{stats.completed}}</div>
+                        <div class="stats-label">{{#str}}completed, local_studentdashboard{{/str}}</div>
+                    </div>
+                    <div class="col-4 stats-card">
+                        <div class="stats-number">{{stats.incomplete}}</div>
+                        <div class="stats-label">{{#str}}incomplete, local_studentdashboard{{/str}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Last Course Accessed -->
+        <div class="col-md-4 mb-4">
+            <div class="progress-card">
+                <h5 class="section-title">{{#str}}last_course_accessed, local_studentdashboard{{/str}}</h5>
+                
+                {{#last_course}}
+                <div class="progress-circle" data-progress="{{progress}}">
+                    <svg width="150" height="150">
+                        <circle cx="75" cy="75" r="60" class="progress-bg"></circle>
+                        <circle cx="75" cy="75" r="60" class="progress-fill" data-progress="{{progress}}"></circle>
+                    </svg>
+                    <div class="progress-text">{{progress}}%</div>
+                </div>
+                
+                <div class="course-details mt-3">
+                    <h6 class="course-name">{{fullname}}</h6>
+                    <a href="{{url}}" class="btn btn-primary continue-btn">
+                        {{#str}}continue_course, local_studentdashboard{{/str}}
+                    </a>
+                </div>
+                {{/last_course}}
+                
+                {{^last_course}}
+                <div class="text-center py-4">
+                    <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No courses accessed yet</p>
+                </div>
+                {{/last_course}}
+            </div>
+        </div>
+
+        <!-- Recently Accessed Items -->
+        <div class="col-md-8">
+            <div class="recently-accessed-section">
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <h5 class="section-title mb-0">{{#str}}recently_accessed_items, local_studentdashboard{{/str}}</h5>
+                </div>
+
+                {{#has_recent_items}}
+                <div class="row mt-3">
+                    {{#recent_items}}
+                    <div class="col-md-4 mb-3">
+                        <div class="recent-item-card">
+                            <div class="recent-item-icon">
+                                <i class="{{icon}}"></i>
+                            </div>
+                            <div class="recent-item-content">
+                                <h6 class="item-title">{{name}}</h6>
+                                {{#coursename}}
+                                <p class="item-course text-muted">{{coursename}}</p>
+                                {{/coursename}}
+                                <a href="{{url}}" class="stretched-link"></a>
+                            </div>
+                        </div>
+                    </div>
+                    {{/recent_items}}
+                </div>
+                {{/has_recent_items}}
+                
+                {{^has_recent_items}}
+                <div class="text-center py-4">
+                    <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No recent activity</p>
+                </div>
+                {{/has_recent_items}}
+            </div>
+
+            <!-- Course Cards -->
+            {{#has_courses}}
+            <div class="courses-section mt-4">
+                <h5 class="section-title">Your Courses</h5>
+                <div class="row">
+                    {{#courses}}
+                    <div class="col-md-4 mb-4">
+                        <div class="course-card">
+                            <div class="course-image">
+                                <div class="course-badges">
+                                    <div class="course-badge">
+                                        <i class="fas fa-medal"></i>
+                                    </div>
+                                    <div class="course-badge">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <div class="course-characters">
+                                    <div class="character">
+                                        <i class="fas fa-user-md"></i>
+                                    </div>
+                                    <div class="character">
+                                        <i class="fas fa-user-nurse"></i>
+                                    </div>
+                                    <div class="character">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="course-content">
+                                <h6 class="course-title">{{fullname}}</h6>
+                                <p class="course-description">
+                                    {{summary}}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{{url}}" class="btn resume-btn">
+                                        {{#str}}resume, local_studentdashboard{{/str}}
+                                    </a>
+                                    <span class="progress-badge">{{progress}}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/courses}}
+                </div>
+            </div>
+            {{/has_courses}}
+        </div>
+    </div>
+</div>
