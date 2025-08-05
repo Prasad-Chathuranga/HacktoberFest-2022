@@ -1,236 +1,249 @@
-# Student Dashboard - Moodle Local Plugin
+# Student Dashboard Plugin for Moodle
 
-A modern, responsive student dashboard plugin for Moodle that provides an enhanced learning experience with course progress tracking, badges display, and recent activity overview.
-
-![Student Dashboard](./screenshots/dashboard.png)
+A comprehensive dashboard plugin designed specifically for students to enhance their learning experience in Moodle. This plugin provides a centralized view of course progress, upcoming assignments, recent grades, and quick navigation shortcuts.
 
 ## Features
 
-- **Student-Only Access**: Automatically filters access to students only, redirecting administrators to the standard dashboard
-- **Course Progress Tracking**: Visual progress circles showing completion percentage for each course
-- **Enrollment Statistics**: Overview of enrolled, completed, and incomplete courses
-- **Badge Display**: Showcase of earned badges with visual indicators
-- **Recent Activity**: Quick access to recently accessed courses and forum activities
-- **Responsive Design**: Mobile-friendly interface that works on all devices
-- **Modern UI**: Clean, professional design based on modern UX principles
+### 🎯 Core Dashboard Features
+- **User Profile Overview**: Display student information with avatar and quick profile access
+- **Enrollment Statistics**: Show enrolled, completed, and incomplete course counts
+- **Course Progress Tracking**: Visual progress indicators with animated circles
+- **Badge Integration**: Display earned badges and achievements
 
-## Requirements
+### 📚 Enhanced Learning Tools
+- **Upcoming Assignments**: Shows assignments and quizzes due in the next 2 weeks with urgency indicators
+- **Recent Grades**: Display recent grades with color-coded performance indicators
+- **Quick Navigation**: Fast access to common Moodle features (courses, messages, calendar, etc.)
+- **Recently Accessed Items**: Quick links to recently viewed courses and activities
 
-- Moodle 4.0 or higher
-- PHP 7.4 or higher
-- Modern web browser with CSS3 and ES6 support
+### 🎨 Modern UI/UX
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
+- **Modern Animations**: Smooth transitions and hover effects
+- **Color-Coded Elements**: Visual indicators for urgency, performance, and status
+- **Intuitive Layout**: Clean, organized interface designed for student workflows
 
 ## Installation
 
-### Method 1: Manual Installation
+### Requirements
+- Moodle 4.0 or later
+- PHP 7.4 or later
+- Student role capabilities properly configured
 
-1. Download the plugin files or clone this repository
-2. Extract/copy the files to your Moodle installation directory:
+### Installation Steps
+
+1. **Download or Clone**
+   ```bash
+   cd /path/to/moodle/local/
+   git clone [repository-url] studentdashboard
    ```
-   /path/to/moodle/local/studentdashboard/
+
+2. **Set Permissions**
+   ```bash
+   chmod -R 755 studentdashboard
+   chown -R www-data:www-data studentdashboard
    ```
 
-3. Log in to your Moodle site as an administrator
-4. Navigate to **Site Administration > Notifications**
-5. Follow the installation prompts to complete the installation
+3. **Install Plugin**
+   - Go to Site Administration → Notifications
+   - Follow the installation prompts
+   - The plugin will create necessary capabilities and settings
 
-### Method 2: Using Moodle Plugin Installer
-
-1. Zip the `studentdashboard` folder
-2. Log in as administrator
-3. Go to **Site Administration > Plugins > Install plugins**
-4. Upload the zip file and follow the installation wizard
+4. **Configure Permissions**
+   - Go to Site Administration → Users → Permissions → Define roles
+   - Ensure students have the `local/studentdashboard:view` capability
 
 ## Configuration
 
-### Capabilities
+### Access Control
+The plugin automatically restricts access to students only. Users with administrative capabilities are redirected to the standard Moodle dashboard.
 
-The plugin automatically creates the following capability:
+### Navigation Integration
+The plugin adds navigation links in:
+- Main navigation menu (for students)
+- User profile settings
+- Quick access shortcuts
 
-- `local/studentdashboard:view` - Allows users to view the student dashboard
+### Customization Options
+- **Course Image Fallbacks**: Default images for courses without overview files
+- **Badge Display**: Configure badge display preferences
+- **Navigation Shortcuts**: Customize quick navigation links
 
-### User Access
-
-By default, the plugin grants access to users with the `student` archetype. Administrators and site managers are automatically redirected to the standard Moodle dashboard.
-
-### Navigation
-
-Once installed, students will see a "Learning Dashboard" link in their navigation menu.
-
-## Usage
-
-### For Students
-
-1. Log in to Moodle
-2. Navigate to the "Learning Dashboard" from the main navigation
-3. View your course progress, badges, and recent activity
-4. Click on course cards to resume learning
-5. Access recently viewed content quickly from the recent items section
-
-### For Administrators
-
-- Students will be automatically redirected to the custom dashboard
-- Administrators maintain access to the standard Moodle dashboard
-- Monitor usage through standard Moodle logs
-
-## Customization
-
-### Styling
-
-The plugin includes comprehensive CSS styling in `styles.css`. Key customizable elements:
-
-- Color schemes (modify CSS variables)
-- Card layouts and spacing
-- Animation timing and effects
-- Responsive breakpoints
-
-### Language Strings
-
-All text is internationalized. Modify language strings in:
-```
-/local/studentdashboard/lang/en/local_studentdashboard.php
-```
-
-Add new language packs by creating corresponding language directories.
-
-### Templates
-
-Dashboard layout can be modified by editing the Mustache templates in:
-```
-/local/studentdashboard/templates/
-```
-
-Main template: `dashboard.mustache`
-
-## File Structure
+## Plugin Structure
 
 ```
 local/studentdashboard/
-├── amd/
-│   └── src/
-│       └── dashboard.js          # JavaScript functionality
 ├── classes/
-│   ├── dashboard.php             # Main dashboard class
+│   ├── dashboard.php              # Core dashboard functionality
 │   └── output/
-│       ├── dashboard_page.php    # Dashboard page output class
-│       └── renderer.php          # Template renderer
+│       ├── dashboard_page.php     # Template data preparation
+│       └── renderer.php           # Output rendering
 ├── db/
-│   └── access.php                # Capability definitions
+│   └── access.php                 # Capability definitions
 ├── lang/
 │   └── en/
-│       └── local_studentdashboard.php  # English language strings
-├── pix/                          # Plugin images and icons
+│       └── local_studentdashboard.php  # Language strings
 ├── templates/
-│   └── dashboard.mustache        # Main dashboard template
-├── index.php                     # Main entry point
-├── lib.php                       # Library functions and hooks
+│   └── dashboard.mustache         # Main dashboard template
+├── amd/
+│   └── src/
+│       └── dashboard.js           # JavaScript functionality
+├── pix/                          # Plugin icons and images
 ├── styles.css                    # Plugin styling
-├── version.php                   # Plugin version information
-└── README.md                     # This file
+├── index.php                     # Main dashboard page
+├── lib.php                       # Library functions
+└── version.php                   # Plugin version information
 ```
 
-## API Reference
+## Features in Detail
 
-### Main Classes
+### Upcoming Assignments
+- Displays assignments and quizzes due within 2 weeks
+- Color-coded urgency levels:
+  - **Red**: Due within 3 days (urgent)
+  - **Yellow**: Due within 7 days (soon)
+  - **Green**: Due later (normal)
+- Direct links to assignment/quiz pages
+- Filters out already submitted work
 
-#### `local_studentdashboard\dashboard`
+### Recent Grades
+- Shows the 5 most recent grades
+- Performance indicators:
+  - **Green**: Excellent (80%+)
+  - **Blue**: Good (70-79%)
+  - **Yellow**: Average (60-69%)
+  - **Red**: Needs Improvement (<60%)
+- Displays both percentage and point scores
 
-Main class for retrieving dashboard data:
+### Quick Navigation
+- **My Courses**: Direct access to course list
+- **Messages**: Moodle messaging system
+- **Calendar**: Personal calendar view
+- **Grades**: Complete grade overview
+- **Files**: Personal file management
+- **Profile**: User profile editing
 
-- `get_enrollment_stats()` - Returns enrollment statistics
-- `get_user_courses()` - Gets user's enrolled courses with progress
-- `get_user_badges()` - Retrieves user's earned badges
-- `get_recent_items()` - Gets recently accessed items
-- `get_last_accessed_course()` - Returns the most recently accessed course
+### Progress Tracking
+- Animated progress circles for course completion
+- Based on activity completion and course completion criteria
+- Visual feedback for student motivation
 
-#### `local_studentdashboard\output\dashboard_page`
+## Technical Details
 
-Handles template data preparation:
+### Database Queries
+The plugin uses optimized SQL queries to:
+- Retrieve enrollment statistics
+- Get course progress data
+- Fetch upcoming assignments and deadlines
+- Load recent grades and activities
 
-- `export_for_template()` - Exports data for Mustache templates
+### Performance Considerations
+- Efficient database queries with proper indexes
+- Lazy loading of course images
+- Caching of frequently accessed data
+- Responsive design for fast mobile loading
 
-### Functions
+### Security Features
+- Proper capability checks for student access
+- SQL injection prevention with parameterized queries
+- Cross-site scripting (XSS) protection
+- Role-based access control
 
-#### Library Functions (`lib.php`)
+## Customization
 
-- `local_studentdashboard_extend_navigation()` - Adds navigation menu items
-- `local_studentdashboard_is_student()` - Checks if user is a student
-- `local_studentdashboard_pluginfile()` - Serves plugin files
+### Adding Custom Navigation Items
+Edit the `get_quick_navigation()` method in `classes/dashboard.php`:
 
-## Browser Support
+```php
+$navigation[] = [
+    'name' => 'Custom Link',
+    'url' => new \moodle_url('/custom/path'),
+    'icon' => 'fa-custom-icon',
+    'description' => 'Custom description'
+];
+```
 
-- Chrome 70+
-- Firefox 65+
-- Safari 12+
-- Edge 79+
-- Mobile browsers (iOS Safari, Chrome Mobile)
+### Modifying Urgency Thresholds
+Adjust assignment urgency levels in `get_upcoming_assignments()`:
+
+```php
+$assignment->urgency = $assignment->days_until <= 1 ? 'urgent' : 
+                      ($assignment->days_until <= 5 ? 'soon' : 'normal');
+```
+
+### Styling Customization
+Override styles in your theme or modify `styles.css`:
+
+```css
+.student-dashboard {
+    /* Custom dashboard styles */
+}
+```
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Dashboard not visible for students**
-   - Check that the `local/studentdashboard:view` capability is assigned to student role
-   - Verify the plugin is properly installed and enabled
+1. **Dashboard not showing for students**
+   - Check capability permissions
+   - Verify role assignments
+   - Ensure plugin is properly installed
 
-2. **Styling issues**
-   - Clear browser cache
-   - Check that `styles.css` is being loaded
-   - Verify Moodle theme compatibility
+2. **Missing course images**
+   - Check course overview files
+   - Verify file permissions
+   - Add default images to pix/ directory
 
 3. **JavaScript not working**
-   - Check browser console for errors
-   - Ensure AMD modules are properly built
-   - Verify JavaScript is enabled in browser
+   - Clear theme caches
+   - Check for JavaScript errors in browser console
+   - Verify AMD module loading
 
 ### Debug Mode
-
 Enable Moodle debugging to see detailed error messages:
-1. Go to **Site Administration > Development > Debugging**
-2. Set **Debug messages** to "DEVELOPER"
-3. Check debug output for specific error information
+- Site Administration → Development → Debugging
+- Set Debug messages to "DEVELOPER"
 
-## Contributing
+## Support and Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes following Moodle coding standards
-4. Test thoroughly across different browsers and devices
-5. Submit a pull request with a clear description
+### Bug Reports
+Please report bugs with:
+- Moodle version
+- PHP version
+- Browser information
+- Error messages or screenshots
 
-### Coding Standards
+### Feature Requests
+We welcome suggestions for new features that would benefit student learning.
 
-Follow Moodle coding guidelines:
-- PHP: [Moodle PHP Guidelines](https://docs.moodle.org/dev/Coding_style)
-- JavaScript: [Moodle JavaScript Guidelines](https://docs.moodle.org/dev/JavaScript_guidelines)
-- CSS: [Moodle CSS Guidelines](https://docs.moodle.org/dev/CSS_guidelines)
+### Development
+The plugin follows Moodle coding standards and best practices:
+- PSR-4 autoloading
+- Proper documentation
+- Unit testing (recommended)
+- Accessibility compliance
 
 ## License
 
-This plugin is licensed under the GNU GPL v3 or later.
-
-Copyright (C) 2024 Learning Dashboard Contributors
-
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-## Support
-
-For support, bug reports, or feature requests:
-
-1. Check the documentation above
-2. Search existing issues
-3. Create a new issue with detailed information including:
-   - Moodle version
-   - Plugin version
-   - Browser and version
-   - Steps to reproduce the issue
-   - Expected vs actual behavior
+This plugin is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
 
 ## Changelog
 
+### Version 1.1.0 (2024-12-16)
+- ✨ Added upcoming assignments and deadlines tracking
+- ✨ Integrated recent grades overview with performance indicators
+- ✨ Implemented quick navigation shortcuts
+- 🎨 Enhanced UI with modern design elements
+- 🐛 Improved mobile responsiveness
+- 📚 Updated documentation and installation guide
+
 ### Version 1.0.0 (2024-01-16)
-- Initial release
-- Student-only dashboard with course progress tracking
-- Badge display and recent activity overview
-- Responsive design with modern UI
-- Full internationalization support
+- 🎉 Initial release
+- 📊 Basic dashboard with course progress
+- 👤 User profile integration
+- 🎖️ Badge system support
+- 📱 Responsive design
+
+## Credits
+
+Developed by the Learning Dashboard Team
+Copyright 2024 - Licensed under GPL v3.0

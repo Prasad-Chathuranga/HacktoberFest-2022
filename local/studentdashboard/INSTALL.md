@@ -1,243 +1,464 @@
-# Installation Guide - Student Dashboard Plugin
+# Installation Guide - Enhanced Student Dashboard Plugin
 
-This guide provides step-by-step instructions for installing the Student Dashboard plugin for Moodle.
+This comprehensive guide provides detailed instructions for installing, configuring, and maintaining the enhanced Student Dashboard plugin for Moodle.
 
 ## Prerequisites
 
-Before installing the plugin, ensure your system meets the following requirements:
+Before installing the Student Dashboard plugin, ensure your system meets the following requirements:
 
 ### System Requirements
 - **Moodle Version**: 4.0 or higher
-- **PHP Version**: 7.4 or higher
-- **Web Server**: Apache 2.4+ or Nginx 1.18+
+- **PHP Version**: 7.4 or higher (8.0+ recommended)
 - **Database**: MySQL 5.7+ or PostgreSQL 10+
-- **Browser Support**: Modern browsers (Chrome 70+, Firefox 65+, Safari 12+, Edge 79+)
+- **Web Server**: Apache 2.4+ or Nginx 1.14+
+- **Browser Support**: Modern browsers with CSS3 and ES6 support
 
-### Permissions
-- Administrator access to the Moodle installation
-- File system write permissions to the Moodle directory
-- Database access for creating new tables/capabilities
+### User Requirements
+- Administrator access to Moodle site
+- Access to server file system (for manual installation)
+- OR Plugin installation privileges (for web-based installation)
+
+## New Features in Version 1.1.0
+
+The enhanced version includes:
+- **Upcoming Assignments**: Track assignments and quizzes due in the next 2 weeks
+- **Recent Grades**: Display recent grades with performance indicators
+- **Quick Navigation**: Fast access shortcuts to common Moodle features
+- **Enhanced UI**: Improved responsive design and animations
+- **Performance Optimizations**: Better database queries and caching
 
 ## Installation Methods
 
 ### Method 1: Manual Installation (Recommended)
 
-#### Step 1: Download the Plugin
-1. Download the plugin files or clone the repository
-2. Extract the files if downloaded as a zip
+1. **Download the Plugin**
+   ```bash
+   # Navigate to your Moodle local plugins directory
+   cd /path/to/moodle/local/
+   
+   # Clone the repository (if using Git)
+   git clone [repository-url] studentdashboard
+   
+   # OR extract downloaded ZIP file
+   unzip studentdashboard.zip
+   ```
 
-#### Step 2: Copy Files
-Copy the entire `studentdashboard` folder to your Moodle installation:
+2. **Set File Permissions**
+   ```bash
+   # Set appropriate permissions
+   chmod -R 755 studentdashboard/
+   chown -R www-data:www-data studentdashboard/
+   ```
 
-```bash
-# Navigate to your Moodle root directory
-cd /path/to/your/moodle/
+3. **Complete Installation via Moodle Interface**
+   - Log in to Moodle as an administrator
+   - Navigate to **Site Administration → Notifications**
+   - You should see a notification about the new plugin
+   - Click **Upgrade Moodle database now**
+   - Follow the installation prompts
 
-# Copy the plugin to the local plugins directory
-cp -r /path/to/studentdashboard ./local/
-```
+### Method 2: Web-based Installation
 
-#### Step 3: Set Permissions
-Ensure proper file permissions:
+1. **Prepare Plugin Package**
+   - Download the plugin as a ZIP file
+   - Ensure the ZIP contains the `studentdashboard` folder at the root level
 
-```bash
-# Set ownership (replace www-data with your web server user)
-chown -R www-data:www-data ./local/studentdashboard/
+2. **Install via Moodle Interface**
+   - Log in as administrator
+   - Go to **Site Administration → Plugins → Install plugins**
+   - Upload the ZIP file
+   - Select **Plugin type**: Local plugin
+   - Click **Install plugin from the ZIP file**
+   - Follow the installation wizard
 
-# Set permissions
-find ./local/studentdashboard/ -type f -exec chmod 644 {} \;
-find ./local/studentdashboard/ -type d -exec chmod 755 {} \;
-```
+### Method 3: Upgrade from Version 1.0.0
 
-#### Step 4: Complete Installation
-1. Log in to your Moodle site as an administrator
-2. Navigate to **Site Administration > Notifications**
-3. You should see a notification about the new plugin
-4. Click **Upgrade Moodle database now**
-5. Follow the prompts to complete the installation
+If upgrading from the previous version:
 
-### Method 2: Using Moodle Plugin Installer
+1. **Backup Current Installation**
+   ```bash
+   # Backup existing plugin directory
+   cp -r /path/to/moodle/local/studentdashboard /path/to/backup/studentdashboard_backup
+   ```
 
-#### Step 1: Prepare Plugin Package
-1. Create a zip file containing the `studentdashboard` folder
-2. Ensure the folder structure is: `studentdashboard/version.php` (at the root of the zip)
+2. **Replace Files**
+   ```bash
+   # Remove old files and install new version
+   rm -rf /path/to/moodle/local/studentdashboard/*
+   # Extract new version files
+   ```
 
-#### Step 2: Upload via Web Interface
-1. Log in to Moodle as an administrator
-2. Navigate to **Site Administration > Plugins > Install plugins**
-3. Click **Choose a file** and select your zip file
-4. Click **Install plugin from the ZIP file**
-5. Follow the installation wizard
-
-#### Step 3: Verify Installation
-1. Check that the plugin appears in **Site Administration > Plugins > Plugins overview**
-2. Look for "Student Dashboard" under "Local plugins"
+3. **Run Upgrade**
+   - Visit **Site Administration → Notifications**
+   - Complete the database upgrade process
 
 ## Post-Installation Configuration
 
-### Step 1: Verify Capabilities
-1. Go to **Site Administration > Users > Permissions > Define roles**
-2. Edit the **Student** role
-3. Ensure `local/studentdashboard:view` is set to **Allow**
+### 1. Verify Installation
 
-### Step 2: Test Student Access
-1. Log in as a student user (or create a test student account)
-2. Look for "Learning Dashboard" in the navigation menu
-3. Access the dashboard to verify it loads correctly
+After installation, verify the plugin is working correctly:
 
-### Step 3: Configure Navigation (Optional)
-If you want to customize where the dashboard link appears:
+1. **Check Plugin Status**
+   - Go to **Site Administration → Plugins → Plugins overview**
+   - Locate "local_studentdashboard" in the list
+   - Status should show as "Enabled"
+   - Version should display "1.1.0"
 
-1. Go to **Site Administration > Appearance > Navigation**
-2. Modify navigation settings as needed
-3. The plugin adds the dashboard link automatically for students
+2. **Test Enhanced Features**
+   - Log in as a test student account
+   - Look for "Learning Dashboard" in the navigation menu
+   - Verify new sections appear:
+     - Quick Navigation shortcuts
+     - Upcoming Assignments (if any exist)
+     - Recent Grades (if any exist)
 
-## Verification Steps
+### 2. Configure Capabilities
 
-### Check File Structure
-Verify the following files exist in your installation:
+The plugin automatically creates the `local/studentdashboard:view` capability. Verify and adjust as needed:
 
-```
-moodle/local/studentdashboard/
-├── version.php
-├── index.php
-├── lib.php
-├── styles.css
-├── db/access.php
-├── lang/en/local_studentdashboard.php
-├── classes/dashboard.php
-├── classes/output/dashboard_page.php
-├── classes/output/renderer.php
-├── templates/dashboard.mustache
-└── amd/src/dashboard.js
-```
+1. **Check Default Permissions**
+   - Go to **Site Administration → Users → Permissions → Define roles**
+   - Edit the "Student" role
+   - Ensure `local/studentdashboard:view` is set to "Allow"
 
-### Test Functionality
-1. **Student Dashboard Access**: Students should see the dashboard link
-2. **Admin Redirection**: Administrators should not see the student dashboard
-3. **Course Progress**: Progress circles should display correctly
-4. **Recent Items**: Recently accessed items should appear
-5. **Responsive Design**: Test on mobile devices
+2. **Restrict Admin Access (Automatic)**
+   - The plugin automatically prevents admin users from accessing the student dashboard
+   - Admins are redirected to the standard Moodle dashboard
 
-### Check Logs
-Monitor your Moodle logs for any errors:
-1. Go to **Site Administration > Reports > Logs**
-2. Filter by the studentdashboard component
-3. Look for any error entries
+### 3. Enhanced Navigation Setup
 
-## Troubleshooting Installation Issues
+The plugin now provides multiple navigation integration points:
 
-### Common Problems
+- **Main Navigation**: "Learning Dashboard" appears for students
+- **Quick Navigation Widget**: Six shortcut buttons for common actions
+- **User Menu**: Dashboard link in user profile area
+- **Responsive Mobile Menu**: Optimized mobile navigation
 
-#### 1. Plugin Not Detected
-**Symptoms**: Plugin doesn't appear in notifications or plugin list
+### 4. Assignment and Grade Configuration
 
-**Solutions**:
-- Verify file permissions (web server must be able to read files)
-- Check that `version.php` exists and is properly formatted
-- Ensure the plugin is in the correct directory: `moodle/local/studentdashboard/`
+For optimal functionality of new features:
 
-#### 2. Database Errors During Installation
-**Symptoms**: SQL errors during the upgrade process
+1. **Enable Course Completion**
+   - Go to **Site Administration → Advanced features**
+   - Enable "Enable completion tracking"
+   - Configure completion criteria in individual courses
 
-**Solutions**:
-- Check database user permissions
-- Verify database connection settings
-- Review the installation logs in `moodledata/`
+2. **Configure Assignment Settings**
+   - Ensure assignments have due dates set
+   - Enable assignment notifications if desired
 
-#### 3. Permission Denied Errors
-**Symptoms**: Cannot access plugin files or features
+3. **Set Up Gradebook**
+   - Configure grade categories and items
+   - Ensure proper grade calculation methods
 
-**Solutions**:
-```bash
-# Fix file permissions
-chmod -R 755 /path/to/moodle/local/studentdashboard/
-chown -R www-data:www-data /path/to/moodle/local/studentdashboard/
-```
+## Advanced Configuration
 
-#### 4. JavaScript/CSS Not Loading
-**Symptoms**: Dashboard appears broken or lacks styling
+### Database Optimization for Enhanced Features
 
-**Solutions**:
-- Clear Moodle cache: **Site Administration > Development > Purge all caches**
-- Check web server configuration for serving static files
-- Verify browser developer tools for 404 errors
+The new features include additional database queries. Optimize performance:
 
-### Getting Help
+1. **Create Performance Indexes**
+   ```sql
+   -- Indexes for assignment tracking
+   CREATE INDEX idx_assign_duedate ON mdl_assign(duedate);
+   CREATE INDEX idx_quiz_timeclose ON mdl_quiz(timeclose);
+   
+   -- Indexes for grade tracking
+   CREATE INDEX idx_grade_grades_timemodified ON mdl_grade_grades(timemodified);
+   CREATE INDEX idx_grade_grades_userid ON mdl_grade_grades(userid);
+   
+   -- Indexes for recent activity
+   CREATE INDEX idx_user_lastaccess_timeaccess ON mdl_user_lastaccess(timeaccess);
+   ```
 
-If you encounter issues not covered here:
+2. **Enable Query Caching**
+   - Configure MySQL query cache or PostgreSQL shared buffers
+   - Consider implementing Redis or Memcached for application caching
 
-1. **Check the README.md** for additional troubleshooting information
-2. **Enable debugging**: Site Administration > Development > Debugging
-3. **Review server logs**: Check Apache/Nginx error logs
-4. **Moodle logs**: Monitor Site Administration > Reports > Logs
+### Customize Quick Navigation
 
-### Manual Cleanup (If Needed)
+Modify the quick navigation shortcuts in `classes/dashboard.php`:
 
-If you need to remove the plugin manually:
-
-```bash
-# Remove plugin files
-rm -rf /path/to/moodle/local/studentdashboard/
-
-# Clean database (run these SQL commands in your database)
-DELETE FROM mdl_capabilities WHERE name LIKE 'local/studentdashboard:%';
-DELETE FROM mdl_role_capabilities WHERE capability LIKE 'local/studentdashboard:%';
-DELETE FROM mdl_config_plugins WHERE plugin = 'local_studentdashboard';
+```php
+public function get_quick_navigation() {
+    $navigation = [
+        [
+            'name' => 'Custom Feature',
+            'url' => new \moodle_url('/custom/path'),
+            'icon' => 'fa-custom-icon',
+            'description' => 'Access custom feature'
+        ],
+        // ... existing navigation items
+    ];
+    return $navigation;
+}
 ```
 
-## Security Considerations
+### Assignment Urgency Customization
 
-### File Permissions
-- Plugin files should not be writable by the web server unless necessary
-- Uploaded files should be stored outside the web root
-- Regular security updates should be applied
+Adjust urgency thresholds for assignments:
 
-### User Access
-- The plugin automatically restricts access to students only
-- Administrators are redirected to maintain security separation
-- Monitor user activity through Moodle's standard logging
+```php
+// In get_upcoming_assignments() method
+$assignment->urgency = $assignment->days_until <= 1 ? 'urgent' : 
+                      ($assignment->days_until <= 3 ? 'soon' : 'normal');
+```
+
+### Grade Performance Indicators
+
+Customize grade performance thresholds:
+
+```php
+// In get_recent_grades() method
+$grade->grade_class = $grade->percentage >= 90 ? 'excellent' : 
+                     ($grade->percentage >= 80 ? 'good' : 
+                     ($grade->percentage >= 70 ? 'average' : 'needs_improvement'));
+```
+
+## Enhanced Language Customization
+
+The new version includes additional language strings:
+
+1. **Modify Enhanced Strings**
+   - Edit `/local/studentdashboard/lang/en/local_studentdashboard.php`
+   - Customize new strings like 'upcoming_assignments', 'recent_grades', etc.
+
+2. **Add Institution-Specific Terms**
+   ```php
+   // Example customizations
+   $string['upcoming_assignments'] = 'Tasks Due Soon';
+   $string['recent_grades'] = 'Latest Results';
+   $string['quick_navigation'] = 'Fast Access';
+   ```
 
 ## Performance Optimization
 
-### Caching
-- The plugin respects Moodle's caching mechanisms
-- Consider enabling application caching for better performance
-- Monitor database queries and optimize if necessary
+### Caching Configuration
 
-### Database Indexing
-The plugin uses standard Moodle database functions, but consider adding indexes if you have a large number of users:
+1. **Enable Application Caching**
+   - **Site Administration → Plugins → Caching → Configuration**
+   - Enable caching for dashboard data
+   - Consider implementing custom cache definitions
 
-```sql
--- Optional: Add index for faster course access queries
-ALTER TABLE mdl_user_lastaccess ADD INDEX idx_userid_courseid (userid, courseid);
-```
+2. **Database Query Optimization**
+   ```php
+   // Example of implementing query caching
+   $cache = cache::make('local_studentdashboard', 'dashboard_data');
+   $cachekey = 'user_' . $userid . '_assignments';
+   
+   if (!$assignments = $cache->get($cachekey)) {
+       $assignments = $this->get_upcoming_assignments();
+       $cache->set($cachekey, $assignments);
+   }
+   ```
 
-## Backup and Recovery
+### Image Optimization
 
-### Before Installation
-1. **Backup your Moodle database**:
+1. **Optimize Course Images**
+   - Compress course overview images
+   - Use appropriate image formats (WebP when supported)
+   - Implement lazy loading for better performance
+
+2. **Configure Image Caching**
+   ```apache
+   # Apache .htaccess for image caching
+   <IfModule mod_expires.c>
+       ExpiresActive on
+       ExpiresByType image/png "access plus 1 month"
+       ExpiresByType image/jpg "access plus 1 month"
+       ExpiresByType image/jpeg "access plus 1 month"
+   </IfModule>
+   ```
+
+## Troubleshooting Enhanced Features
+
+### Assignment Tracking Issues
+
+1. **Assignments Not Appearing**
+   - Verify assignments have due dates set
+   - Check that courses are visible and user is enrolled
+   - Ensure assignment module is enabled
+
+2. **Incorrect Due Date Calculations**
+   - Check server timezone settings
+   - Verify user timezone preferences
+   - Test with different date formats
+
+### Grade Display Problems
+
+1. **Grades Not Showing**
+   - Verify gradebook configuration
+   - Check grade item visibility settings
+   - Ensure proper grade calculation methods
+
+2. **Incorrect Grade Percentages**
+   - Check grade scale configurations
+   - Verify maximum grade values
+   - Test with different grade types
+
+### Navigation Issues
+
+1. **Quick Navigation Not Working**
+   - Check user capabilities for target pages
+   - Verify URL generation in navigation method
+   - Test with different user roles
+
+2. **Mobile Responsiveness Problems**
+   - Test on various device sizes
+   - Check CSS media queries
+   - Verify touch-friendly interactions
+
+## Security Considerations
+
+### Enhanced Security Features
+
+1. **Input Validation**
+   - All user inputs are properly sanitized
+   - Database queries use parameterized statements
+   - XSS protection implemented throughout
+
+2. **Access Control**
+   - Capability checks on all new features
+   - Proper context validation
+   - Role-based feature visibility
+
+3. **Data Privacy**
+   - Student data access limited to own records
+   - Proper anonymization in shared contexts
+   - GDPR compliance considerations
+
+## Monitoring and Analytics
+
+### Performance Monitoring
+
+1. **Dashboard Load Times**
+   ```php
+   // Add timing checks in dashboard methods
+   $starttime = microtime(true);
+   $assignments = $this->get_upcoming_assignments();
+   $loadtime = microtime(true) - $starttime;
+   // Log performance metrics
+   ```
+
+2. **Database Query Analysis**
+   - Monitor slow query logs
+   - Use EXPLAIN to analyze query performance
+   - Implement query profiling for optimization
+
+### Usage Analytics
+
+1. **Track Feature Usage**
+   - Monitor which features are most used
+   - Analyze user engagement patterns
+   - Collect feedback on new features
+
+2. **Performance Metrics**
+   - Dashboard page load times
+   - Database query execution times
+   - User session duration on dashboard
+
+## Backup and Maintenance
+
+### Enhanced Backup Procedures
+
+1. **Complete System Backup**
+   ```bash
+   # Database backup with new tables
+   mysqldump -u username -p --single-transaction database_name > moodle_enhanced_backup.sql
+   
+   # File system backup including new assets
+   tar -czf moodle_enhanced_backup.tar.gz /path/to/moodle/ --exclude='*/cache/*'
+   ```
+
+2. **Configuration Backup**
+   ```bash
+   # Backup custom configurations
+   cp /path/to/moodle/local/studentdashboard/classes/dashboard.php /backup/dashboard_config.php
+   cp /path/to/moodle/local/studentdashboard/styles.css /backup/custom_styles.css
+   ```
+
+### Regular Maintenance Tasks
+
+1. **Clean Up Old Data**
+   - Remove expired assignment data
+   - Archive old grade records
+   - Clean up unused cache entries
+
+2. **Update Dependencies**
+   - Keep Font Awesome icons updated
+   - Update JavaScript libraries
+   - Monitor for security updates
+
+## Migration and Scaling
+
+### Multi-Site Deployment
+
+For institutions with multiple Moodle instances:
+
+1. **Standardize Configuration**
+   - Create configuration templates
+   - Use environment-specific settings
+   - Implement centralized monitoring
+
+2. **Performance Scaling**
+   - Implement load balancing for database queries
+   - Use CDN for static assets
+   - Consider database clustering for large installations
+
+## Support and Resources
+
+### Enhanced Documentation
+
+1. **Feature-Specific Guides**
+   - Assignment tracking configuration
+   - Grade display customization
+   - Navigation widget setup
+
+2. **API Documentation**
+   - New method signatures
+   - Enhanced template variables
+   - Custom event triggers
+
+### Community Resources
+
+1. **Best Practices**
+   - Optimization techniques
+   - Customization examples
+   - Integration patterns
+
+2. **Troubleshooting Database**
+   - Common configuration issues
+   - Performance optimization tips
+   - Error resolution guides
+
+### Professional Support
+
+1. **Development Services**
+   - Custom feature development
+   - Performance optimization
+   - Integration consulting
+
+2. **Training Resources**
+   - Administrator training materials
+   - User adoption guides
+   - Best practice workshops
+
+## CLI Tools and Automation
+
+### Command Line Utilities
+
 ```bash
-mysqldump -u username -p moodle > moodle_backup_$(date +%Y%m%d).sql
+# Check dashboard configuration
+php /path/to/moodle/local/studentdashboard/cli/check_config.php
+
+# Rebuild dashboard caches
+php /path/to/moodle/local/studentdashboard/cli/rebuild_cache.php
+
+# Analyze dashboard performance
+php /path/to/moodle/local/studentdashboard/cli/performance_report.php
+
+# Clean up old dashboard data
+php /path/to/moodle/local/studentdashboard/cli/cleanup_data.php --days=30
 ```
 
-2. **Backup your Moodle files**:
-```bash
-tar -czf moodle_files_backup_$(date +%Y%m%d).tar.gz /path/to/moodle/
-```
-
-### After Installation
-- Test the backup and restore process with the plugin installed
-- Verify that plugin data is included in backups
-- Document any custom configurations for disaster recovery
-
-## Next Steps
-
-After successful installation:
-
-1. **User Training**: Provide students with information about the new dashboard
-2. **Monitoring**: Monitor usage and performance metrics
-3. **Feedback**: Collect user feedback for future improvements
-4. **Updates**: Stay informed about plugin updates and security patches
-
-For ongoing support and updates, refer to the plugin documentation and community resources.
+This enhanced installation guide provides comprehensive coverage of the new features and capabilities in version 1.1.0. For additional support or advanced customization needs, refer to the main README.md file or contact the development team.

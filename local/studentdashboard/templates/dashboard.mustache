@@ -83,7 +83,56 @@
         </div>
     </div>
 
+    <!-- Quick Navigation -->
+    <div class="quick-navigation-section mb-4">
+        <h5 class="section-title">{{#str}}navigation_shortcuts, local_studentdashboard{{/str}}</h5>
+        <div class="row">
+            {{#quick_navigation}}
+            <div class="col-md-2 col-sm-4 mb-3">
+                <a href="{{url}}" class="nav-shortcut">
+                    <div class="nav-icon">
+                        <i class="fas {{icon}}"></i>
+                    </div>
+                    <div class="nav-label">{{name}}</div>
+                </a>
+            </div>
+            {{/quick_navigation}}
+        </div>
+    </div>
+
     <div class="row">
+        <!-- Upcoming Assignments -->
+        <div class="col-md-4 mb-4">
+            <div class="assignments-section">
+                <h5 class="section-title">{{#str}}upcoming_assignments, local_studentdashboard{{/str}}</h5>
+                
+                {{#has_assignments}}
+                <div class="assignments-list">
+                    {{#upcoming_assignments}}
+                    <div class="assignment-item {{urgency}}">
+                        <div class="assignment-icon">
+                            <i class="fas {{#eq modname "assign"}}fa-file-alt{{/eq}}{{#eq modname "quiz"}}fa-question-circle{{/eq}}"></i>
+                        </div>
+                        <div class="assignment-details">
+                            <h6 class="assignment-name">{{name}}</h6>
+                            <p class="assignment-course">{{coursename}}</p>
+                            <span class="assignment-due">{{#str}}due_in, local_studentdashboard, {{days_until}}{{/str}}</span>
+                        </div>
+                        <a href="{{url}}" class="stretched-link"></a>
+                    </div>
+                    {{/upcoming_assignments}}
+                </div>
+                {{/has_assignments}}
+                
+                {{^has_assignments}}
+                <div class="text-center py-4">
+                    <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">{{#str}}no_assignments, local_studentdashboard{{/str}}</p>
+                </div>
+                {{/has_assignments}}
+            </div>
+        </div>
+
         <!-- Last Course Accessed -->
         <div class="col-md-4 mb-4">
             <div class="progress-card">
@@ -116,7 +165,40 @@
         </div>
 
         <!-- Recently Accessed Items -->
-        <div class="col-md-8">
+        <div class="col-md-4 mb-4">
+            <div class="grades-section">
+                <h5 class="section-title">{{#str}}recent_grades, local_studentdashboard{{/str}}</h5>
+                
+                {{#has_grades}}
+                <div class="grades-list">
+                    {{#recent_grades}}
+                    <div class="grade-item">
+                        <div class="grade-details">
+                            <h6 class="grade-item-name">{{itemname}}</h6>
+                            <p class="grade-course">{{coursename}}</p>
+                        </div>
+                        <div class="grade-score {{grade_class}}">
+                            <span class="grade-percentage">{{percentage}}%</span>
+                            <span class="grade-points">{{finalgrade}}/{{grademax}}</span>
+                        </div>
+                    </div>
+                    {{/recent_grades}}
+                </div>
+                {{/has_grades}}
+                
+                {{^has_grades}}
+                <div class="text-center py-4">
+                    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">{{#str}}no_grades, local_studentdashboard{{/str}}</p>
+                </div>
+                {{/has_grades}}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recently Accessed Items -->
+        <div class="col-md-12">
             <div class="recently-accessed-section">
                 <div class="section-header d-flex justify-content-between align-items-center">
                     <h5 class="section-title mb-0">{{#str}}recently_accessed_items, local_studentdashboard{{/str}}</h5>

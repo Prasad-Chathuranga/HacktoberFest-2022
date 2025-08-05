@@ -224,4 +224,145 @@ class dashboard {
         $courses = $this->get_user_courses();
         return !empty($courses) ? $courses[0] : null;
     }
+
+    /**
+     * Get upcoming assignments and deadlines
+     * @return array Array of upcoming assignments
+     */
+    public function get_upcoming_assignments() {
+        global $DB;
+
+        $sql = "SELECT a.id, a.name, a.duedate, c.fullname as coursename, c.id as courseid,
+                       'assign' as modname
+                FROM {assign} a
+                JOIN {course} c ON c.id = a.course
+                JOIN {enrol} e ON e.courseid = c.id
+                JOIN {user_enrolments} ue ON ue.enrolid = e.id
+                LEFT JOIN {assign_submission} asub ON asub.assignment = a.id AND asub.userid = ?
+                WHERE ue.userid = ? 
+                AND a.duedate > ? 
+                AND a.duedate < ?
+                AND c.visible = 1 
+                AND c.id != 1
+                AND (asub.id IS NULL OR asub.status = 'draft')
+                
+                UNION ALL
+                
+                SELECT q.id, q.name, q.timeclose as duedate, c.fullname as coursename, c.id as courseid,
+                       'quiz' as modname
+                FROM {quiz} q
+                JOIN {course} c ON c.id = q.course
+                JOIN {enrol} e ON e.courseid = c.id
+                JOIN {user_enrolments} ue ON ue.enrolid = e.id
+                LEFT JOIN {quiz_attempts} qa ON qa.quiz = q.id AND qa.userid = ?
+                WHERE ue.userid = ? 
+                AND q.timeclose > ? 
+                AND q.timeclose < ?
+                AND c.visible = 1 
+                AND c.id != 1
+                AND qa.id IS NULL
+                
+                ORDER BY duedate ASC
+                LIMIT 5";
+
+        $now = time();
+        $twoweeks = $now + (14 * 24 * 60 * 60); // Next 2 weeks
+
+        $assignments = $DB->get_records_sql($sql, [
+            $this->user->id, $this->user->id, $now, $twoweeks,
+            $this->user->id, $this->user->id, $now, $twoweeks
+        ]);
+
+        foreach ($assignments as $assignment) {
+            $assignment->url = new \moodle_url('/mod/' . $assignment->modname . '/view.php', ['id' => $assignment->id]);
+            $assignment->days_until = ceil(($assignment->duedate - $now) / (24 * 60 * 60));
+            $assignment->urgency = $assignment->days_until <= 3 ? 'urgent' : ($assignment->days_until <= 7 ? 'soon' : 'normal');
+        }
+
+        return array_values($assignments);
+    }
+
+    /**
+     * Get recent grades
+     * @return array Array of recent grades
+     */
+    public function get_recent_grades() {
+        global $DB;
+
+        $sql = "SELECT gi.id, gi.itemname, gi.itemmodule, gg.finalgrade, gg.timemodified,
+                       c.fullname as coursename, c.id as courseid, gi.grademax
+                FROM {grade_grades} gg
+                JOIN {grade_items} gi ON gi.id = gg.itemid
+                JOIN {course} c ON c.id = gi.courseid
+                JOIN {enrol} e ON e.courseid = c.id
+                JOIN {user_enrolments} ue ON ue.enrolid = e.id
+                WHERE gg.userid = ? 
+                AND ue.userid = ?
+                AND gg.finalgrade IS NOT NULL
+                AND c.visible = 1 
+                AND c.id != 1
+                AND gi.itemtype = 'mod'
+                ORDER BY gg.timemodified DESC
+                LIMIT 5";
+
+        $grades = $DB->get_records_sql($sql, [$this->user->id, $this->user->id]);
+
+        foreach ($grades as $grade) {
+            $grade->percentage = $grade->grademax > 0 ? round(($grade->finalgrade / $grade->grademax) * 100) : 0;
+            $grade->grade_class = $grade->percentage >= 80 ? 'excellent' : 
+                                 ($grade->percentage >= 70 ? 'good' : 
+                                 ($grade->percentage >= 60 ? 'average' : 'needs_improvement'));
+        }
+
+        return array_values($grades);
+    }
+
+    /**
+     * Get quick navigation items
+     * @return array Array of navigation shortcuts
+     */
+    public function get_quick_navigation() {
+        global $CFG;
+
+        $navigation = [
+            [
+                'name' => 'My Courses',
+                'url' => new \moodle_url('/my/courses.php'),
+                'icon' => 'fa-book',
+                'description' => 'View all enrolled courses'
+            ],
+            [
+                'name' => 'Messages',
+                'url' => new \moodle_url('/message/index.php'),
+                'icon' => 'fa-envelope',
+                'description' => 'Check your messages'
+            ],
+            [
+                'name' => 'Calendar',
+                'url' => new \moodle_url('/calendar/view.php'),
+                'icon' => 'fa-calendar',
+                'description' => 'View your calendar'
+            ],
+            [
+                'name' => 'Grades',
+                'url' => new \moodle_url('/grade/report/overview/index.php'),
+                'icon' => 'fa-chart-line',
+                'description' => 'View your grades'
+            ],
+            [
+                'name' => 'Files',
+                'url' => new \moodle_url('/user/files.php'),
+                'icon' => 'fa-folder',
+                'description' => 'Manage your files'
+            ],
+            [
+                'name' => 'Profile',
+                'url' => new \moodle_url('/user/profile.php'),
+                'icon' => 'fa-user',
+                'description' => 'Edit your profile'
+            ]
+        ];
+
+        return $navigation;
+    }
 }
